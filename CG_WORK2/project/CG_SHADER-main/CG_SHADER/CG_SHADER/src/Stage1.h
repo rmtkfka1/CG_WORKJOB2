@@ -48,7 +48,7 @@ public:
 
 	int count_hang;
 	int count_yal;
-
+	bool pass = false;
 	int count = 0;
 };
 

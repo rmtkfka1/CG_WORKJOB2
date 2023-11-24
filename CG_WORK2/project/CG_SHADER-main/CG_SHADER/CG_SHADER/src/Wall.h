@@ -35,12 +35,15 @@ public:
 
 	void ChangeAnimation(animation stateinput);
 	void UpdateAnimation();
+	void UpdateKey();
 
 public:
 	float dy = 0;
 	int i = 0;
 	int j = 0;
 	int speed = rand() %70+20;
+
+	bool dontmove = false;
 
 	
 	animation state = animation::START_UP_ANI;

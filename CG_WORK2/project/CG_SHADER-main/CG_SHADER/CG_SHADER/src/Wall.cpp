@@ -31,7 +31,7 @@ void Wall::Update()
 	Super::Update();
 
 	UpdateAnimation();
-
+	UpdateKey();
 }
 
 void Wall::Render(Shader& shader, Model& model, glm::mat4 matrix2)
@@ -164,11 +164,12 @@ void Wall::UpdateAnimation()
 	break;
 	case animation::MY_ANI_DOWN:
 	{
-	
-		this->dy -= 0.1 * this->speed * TimeManager::GetInstance()->GetDeltaTime();
-		auto scale = matrix::GetInstance()->GetScale(1, this->dy, 1);
-		auto trans = matrix::GetInstance()->GetTranslation(this->i, 0, this->j);
-		this->matrix = trans * scale;
+		
+			this->dy -= 0.1 * this->speed * TimeManager::GetInstance()->GetDeltaTime();
+			auto scale = matrix::GetInstance()->GetScale(1, this->dy, 1);
+			auto trans = matrix::GetInstance()->GetTranslation(this->i, 0, this->j);
+			this->matrix = trans * scale;
+		
 
 		if (this->dy < 1.0f)
 		{
@@ -180,11 +181,12 @@ void Wall::UpdateAnimation()
 
 	case animation::MY_ANI_UP:
 	{
-		this->dy += 0.1 * this->speed * TimeManager::GetInstance()->GetDeltaTime();
-		auto scale = matrix::GetInstance()->GetScale(1, this->dy, 1);
-		auto trans = matrix::GetInstance()->GetTranslation(this->i, 0, this->j);
-		this->matrix = trans * scale;
-
+	
+			this->dy += 0.1 * this->speed * TimeManager::GetInstance()->GetDeltaTime();
+			auto scale = matrix::GetInstance()->GetScale(1, this->dy, 1);
+			auto trans = matrix::GetInstance()->GetTranslation(this->i, 0, this->j);
+			this->matrix = trans * scale;
+		
 		if (this->dy > 20.0f)
 		{
 			ChangeAnimation(animation::MY_ANI_DOWN);
@@ -194,6 +196,30 @@ void Wall::UpdateAnimation()
 	default:
 
 		break;
+	}
+
+}
+
+void Wall::UpdateKey()
+{
+	if (KeyManager::GetInstance()->Getbutton(KeyType::FOUR))
+	{
+		if (this->speed > 100.0f)
+		{
+			return;
+		}
+		this->speed += 1000.0f * TimeManager::GetInstance()->GetDeltaTime();
+	}
+
+	if (KeyManager::GetInstance()->Getbutton(KeyType::FIVE))
+	{
+
+		if (this->speed < 20.0f)
+		{
+			return;
+		}
+
+		this->speed -= 100.0f * TimeManager::GetInstance()->GetDeltaTime();
 	}
 
 }
