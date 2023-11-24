@@ -8,7 +8,7 @@ class Model;
 class Texture;
 class Shader;
 class Wall;
-
+class Light;
 
 class Stage1 : public Scene
 {
@@ -20,6 +20,7 @@ public:
 	virtual void Update() override;
 	virtual void Render() override;
 	void KeyUpdate();
+	void LightUpdate();
 public:
 
 
@@ -44,11 +45,14 @@ public:
 	//벽만들기
 	vector<Wall*> v_wall;
 
+	Light* light;
 
 
 	int count_hang;
 	int count_yal;
 	bool pass = false;
 	int count = 0;
+
+	bool turn_light = true;
 };
 

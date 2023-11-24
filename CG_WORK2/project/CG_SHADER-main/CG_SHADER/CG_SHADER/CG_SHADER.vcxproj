@@ -219,15 +219,6 @@
     <None Include="res\shader\mvp.fs" />
     <None Include="res\shader\mvp.vs" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\models\K-093.png" />
-    <Image Include="res\textures\brick.png" />
-    <Image Include="res\textures\cat_diffuse.png" />
-    <Image Include="res\textures\JBNU.png" />
-    <Image Include="res\textures\1.jpg" />
-    <Image Include="res\textures\zz.jpg" />
-    <Image Include="res\textures\해리.jpeg" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -110,7 +110,7 @@ void Wall::UpdateAnimation()
 
 		this->dy += 0.1 * this->speed * TimeManager::GetInstance()->GetDeltaTime();
 
-		if (this->dy > 20.0f)
+		if (this->dy > 60.0f)
 		{
 			ChangeAnimation(animation::START_DOWN_ANI);
 		}
@@ -133,7 +133,7 @@ void Wall::UpdateAnimation()
 		break;
 	case animation::WAVE_LEFT_ANI:
 	{
-		this->speed = 50.0f;
+		this->speed = 100.0f;
 		this->dy -= 0.1 * this->speed * TimeManager::GetInstance()->GetDeltaTime();
 
 		auto scale = matrix::GetInstance()->GetScale(1, this->dy, 1);
@@ -149,14 +149,14 @@ void Wall::UpdateAnimation()
 
 	case animation::WAVE_RIGHT_ANI:
 	{
-		this->speed = 50.0f;
+		this->speed = 100.0f;
 		this->dy += 0.1 * this->speed * TimeManager::GetInstance()->GetDeltaTime();
 
 		auto scale = matrix::GetInstance()->GetScale(1, this->dy, 1);
 		auto trans = matrix::GetInstance()->GetTranslation(this->i, 0, this->j);
 		this->matrix = trans * scale;
 
-		if (this->dy >20.0f)
+		if (this->dy >40.0f)
 		{
 			ChangeAnimation(animation::WAVE_LEFT_ANI);
 		}
@@ -187,7 +187,7 @@ void Wall::UpdateAnimation()
 			auto trans = matrix::GetInstance()->GetTranslation(this->i, 0, this->j);
 			this->matrix = trans * scale;
 		
-		if (this->dy > 20.0f)
+		if (this->dy > 60.0f)
 		{
 			ChangeAnimation(animation::MY_ANI_DOWN);
 		}

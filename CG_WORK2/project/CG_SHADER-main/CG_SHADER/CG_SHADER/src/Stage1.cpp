@@ -4,6 +4,9 @@
 #include "Wall.h"
 #include "BoxCollider.h"
 #include "CollisionManager.h"
+#include "fmod.hpp"
+#include "fmod_errors.h"
+#include "Light.h"
 
 
 Stage1::Stage1()
@@ -49,8 +52,23 @@ void Stage1::Init()
 	}
 
 	
+	FMOD::System* ssystem;
+	FMOD::Sound* sound1, * sound2;
+	FMOD::Channel* channel = 0;
+	FMOD_RESULT result;
+	void* extradriverdata = 0;
 
-	shader = new Shader("res/shader/mvp.vs", "res/shader/mvp.fs");
+	result = FMOD::System_Create(&ssystem); //--- 사운드 시스템 생성
+	if (result != FMOD_OK)
+		exit(0);
+
+	ssystem->init(32, FMOD_INIT_NORMAL, extradriverdata); //--- 사운드 시스템 초기화
+	ssystem->createSound("sound.mp3", FMOD_LOOP_NORMAL, 0, &sound1);
+	ssystem->playSound(sound1, 0, false, &channel);
+
+
+
+	shader = new Shader("res/shader/mvp_new.vs", "res/shader/mvp_new.fs");
 	shader->Bind();
 
 	///////////////////////////////////////////////////모델 불러오기 밑에 생성전에 먼저해줘야됨
@@ -61,19 +79,19 @@ void Stage1::Init()
 
 	left = new Model("res/models/box_left.obj");
 	right = new Model("res/models/box_right.obj");
-
 	front = new Model("res/models/box_front.obj");
 	back = new Model("res/models/box_back.obj");
 	top = new Model("res/models/box_top.obj");
+
 	for(int i=0; i< count_hang; ++i)
 	{
 		for (int j = 0; j < count_yal; ++j)
 		{
 			Wall* box = new Wall(*wall_model);
 			auto scale =matrix::GetInstance()->GetScale(1,box->dy,1);
-			auto trans = matrix::GetInstance()->GetTranslation(i, 0, j);
+			auto trans = matrix::GetInstance()->GetTranslation(i, 0, j+20);
 			box->i = i;
-			box->j = j;
+			box->j = j+20;
 			box->matrix = trans * scale;
 			v_wall.push_back(box);
 		}
@@ -90,6 +108,9 @@ void Stage1::Init()
 
 
 	shader->SetUniformMat4f("u_proj", matrix::GetInstance()->GetProjection());
+
+	light = new Light();
+
 
 
 	cout << "==========================================================" << endl;
@@ -117,10 +138,16 @@ void Stage1::Init()
 void Stage1::Update()
 {
 
+
+
+
 	CameraManager::GetInstance()->KeyUpdate();
 	CameraManager::GetInstance()->MouseUpdate(MouseManager::GetInstance()->GetMousePos().x, MouseManager::GetInstance()->GetMousePos().y);
 
+
+
 	KeyUpdate();
+	LightUpdate();
 
 	for (auto& ele : v_wall)
 	{
@@ -136,6 +163,10 @@ void Stage1::Update()
 
 void Stage1::Render()
 {
+
+
+	light->UseLight(*shader);
+
 	shader->SetUniform1i("u_texture", 1);
 	shader->SetUniformMat4f("u_model", matrix::GetInstance()->GetSimple());
 	plane_model->RenderModel(*shader);
@@ -167,12 +198,21 @@ void Stage1::KeyUpdate()
 			v_wall[i]->ChangeAnimation(animation::START_UP_ANI);
 		}
 
+		test = 0;
 	
 	}
 
 
 	if (KeyManager::GetInstance()->GetbuttonDown(KeyType::TWO))
 	{
+
+		for (int i = 0; i < v_wall.size(); ++i)
+		{
+			v_wall[i]->dy = 1.0f;
+		
+		}
+
+
 		for (int i = 0; i < count_hang; ++i)
 		{
 			test += 1.0f;
@@ -183,7 +223,13 @@ void Stage1::KeyUpdate()
 			}
 		}
 
-		test = 0;
+
+		for (int i = 0; i < v_wall.size(); ++i)
+		{
+			v_wall[i]->ChangeAnimation(animation::WAVE_LEFT_ANI);
+
+		}
+
 	}
 
 	
@@ -196,7 +242,7 @@ void Stage1::KeyUpdate()
 			for (int j = 0; j < count_yal; ++j)
 			{
 				v_wall[count_hang * i + j]->dy = 2.0f;
-				v_wall[count_hang * i + j]->speed = 10.0f;
+				v_wall[count_hang * i + j]->speed = 100.0f;
 		
 
 			}
@@ -204,12 +250,12 @@ void Stage1::KeyUpdate()
 		
 		for (int i = 0; i < count_hang; ++i) {
 			if (i < count_yal) {
-				v_wall[i * count_hang + i]->dy = 15.0f;
-				v_wall[i * count_hang + i]->speed = 30.0f;
+				v_wall[i * count_hang + i]->dy = 70.0f;
+				v_wall[i * count_hang + i]->speed = 100.0f;
 			
 		
-				v_wall[i * count_hang + (count_hang - 1 - i)]->dy = 15.0f; 
-				v_wall[i * count_hang + (count_hang - 1 - i)]->speed = 30.0f;
+				v_wall[i * count_hang + (count_hang - 1 - i)]->dy = 70.0f; 
+				v_wall[i * count_hang + (count_hang - 1 - i)]->speed = 100.0f;
 	
 			}
 		}
@@ -218,5 +264,65 @@ void Stage1::KeyUpdate()
 		{
 			v_wall[i]->ChangeAnimation(animation::MY_ANI_DOWN);
 		}
+	}
+
+	if(KeyManager::GetInstance()->GetbuttonDown(KeyType::T))
+	{
+		turn_light = !turn_light;
+	}
+
+	if (KeyManager::GetInstance()->GetbuttonDown(KeyType::C))
+	{
+		static int count = 0;
+
+		count++;
+
+		if (count % 4 == 0)
+		{
+			light->SetLightColor(glm::vec3(1.0f, 1.0f, 1.0f));
+		}
+
+		if (count % 4 == 1)
+		{
+			light->SetLightColor(glm::vec3(1.0f, 0, 0));
+			return;
+		}
+
+		if (count % 4 == 2)
+		{
+			light->SetLightColor(glm::vec3(0, 1.0f, 0));
+			return;
+		}
+
+		if (count % 4 == 3)
+		{
+			light->SetLightColor(glm::vec3(0, 0, 1.0f));
+			return;
+		}
+	
+	}
+}
+
+void Stage1::LightUpdate()
+{
+
+	if (turn_light)
+	{
+		light->SetLvector(glm::vec3(CameraManager::GetInstance()->m_cameraPos.x, CameraManager::GetInstance()->m_cameraPos.y, CameraManager::GetInstance()->m_cameraPos.z));
+		//light->SetLvector(glm::vec3(0,1,0));
+		light->SetAmbientIntensity(0.3f);
+		light->SetDiffuseIntensity(5.0f);
+		light->SetSpecularIntensity(15.0f);
+		light->SetShinIness(10.0f);
+		shader->SetUniform3f("u_eyePosition", CameraManager::GetInstance()->m_cameraPos.x
+			, CameraManager::GetInstance()->m_cameraPos.y
+			, CameraManager::GetInstance()->m_cameraPos.z);
+
+	}
+	else
+	{
+		light->SetAmbientIntensity(0.3f);
+		light->SetDiffuseIntensity(0);
+		light->SetSpecularIntensity(0);
 	}
 }
