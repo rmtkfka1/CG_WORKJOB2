@@ -154,6 +154,7 @@
     <ClCompile Include="src\Stage1.cpp">
       <Filter>05.Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\연습장.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core.h">

@@ -1,7 +1,18 @@
 #pragma once
-
-class Model;
 #include "Object.h"
+class Model;
+
+
+enum class animation
+{
+	START_UP_ANI,
+	START_DOWN_ANI,
+	WAVE_LEFT_ANI,
+	WAVE_RIGHT_ANI,
+	MY_ANI_DOWN,
+	MY_ANI_UP
+};
+
 class Wall :public Object
 {
 
@@ -21,10 +32,17 @@ public:
 	void OnComponentBeginOverlap(Collider* collider, Collider* other) override;
 	void OnComponentEndOverlap(Collider* collider, Collider* other) override;
 
+
+	void ChangeAnimation(animation stateinput);
+	void UpdateAnimation();
+
 public:
 	float dy = 0;
 	int i = 0;
 	int j = 0;
-	bool _collusion = false;
+	int speed = rand() %70+20;
+
+	
+	animation state = animation::START_UP_ANI;
 
 };
