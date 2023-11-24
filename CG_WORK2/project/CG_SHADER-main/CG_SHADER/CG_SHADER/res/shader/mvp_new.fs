@@ -35,7 +35,7 @@ void main()
 
 
 
-	vec3 lightDir = normalize(-u_light.direction);
+	vec3 lightDir = normalize(u_light.direction);
 	//µðÇ»Áî
 
 	float diffuseFactor = max(dot(normalize(v_Normal), lightDir), 0.0);
