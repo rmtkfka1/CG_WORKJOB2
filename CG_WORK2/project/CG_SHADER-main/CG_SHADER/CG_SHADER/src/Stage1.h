@@ -31,6 +31,13 @@ public:
 
 	Model* plane_model;
 	Model* wall_model;
+
+	Model* left;
+	Model* right;
+	Model* front;
+	Model* back;
+	Model* top;
+
 	//ÅØ½ºÃÄ
 	Texture* texture;
 	Texture* texture2;

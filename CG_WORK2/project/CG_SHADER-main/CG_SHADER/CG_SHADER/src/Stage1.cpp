@@ -46,8 +46,12 @@ void Stage1::Init()
 	plane_model = new Model("res/models/plane.obj");
 	///////////////////////////////////////////////////////////////////////////////////////////
 
+	left = new Model("res/models/box_left.obj");
+	right = new Model("res/models/box_right.obj");
 
-
+	front = new Model("res/models/box_front.obj");
+	back = new Model("res/models/box_back.obj");
+	top = new Model("res/models/box_top.obj");
 	for(int i=0; i< count_hang; ++i)
 	{
 		for (int j = 0; j < count_yal; ++j)
@@ -64,8 +68,8 @@ void Stage1::Init()
 
 
 
-	texture = new Texture("res/textures/gold.jpg");
-	texture2 = new Texture("res/textures/sea.jpg");
+	texture = new Texture("res/textures/space2.png");
+	texture2 = new Texture("res/textures/space_background.png");
 
 	texture->Bind(0);
 	texture2->Bind(1);
@@ -104,8 +108,11 @@ void Stage1::Render()
 	shader->SetUniformMat4f("u_model", matrix::GetInstance()->GetSimple());
 	plane_model->RenderModel(*shader);
 
-
-
+	left->RenderModel(*shader);
+	right->RenderModel(*shader);
+	front->RenderModel(*shader);
+	back->RenderModel(*shader);
+	top->RenderModel(*shader);
 	for (auto& ele : v_wall)
 	{
 		shader->SetUniform1i("u_texture", 0);
