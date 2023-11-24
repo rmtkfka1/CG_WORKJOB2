@@ -89,9 +89,9 @@ void Stage1::Init()
 		{
 			Wall* box = new Wall(*wall_model);
 			auto scale =matrix::GetInstance()->GetScale(1,box->dy,1);
-			auto trans = matrix::GetInstance()->GetTranslation(i, 0, j+20);
+			auto trans = matrix::GetInstance()->GetTranslation(i, 0, j);
 			box->i = i;
-			box->j = j+20;
+			box->j = j;
 			box->matrix = trans * scale;
 			v_wall.push_back(box);
 		}
@@ -107,14 +107,14 @@ void Stage1::Init()
 
 
 
-	shader->SetUniformMat4f("u_proj", matrix::GetInstance()->GetProjection());
+	
 
 	light = new Light();
 
 
 
 	cout << "==========================================================" << endl;
-	cout << "우주를 표현해보았습니다." << endl;
+	cout << "우주를 컨셉으로 만들어봤슴니당." << endl;
 	cout << "==========================================================" << endl;
 
 	cout << "===============키보드 입력==================" << endl;
@@ -147,7 +147,7 @@ void Stage1::Update()
 
 
 	KeyUpdate();
-	LightUpdate();
+
 
 	for (auto& ele : v_wall)
 	{
@@ -155,7 +155,6 @@ void Stage1::Update()
 	}
 
 
-	shader->SetUniformMat4f("u_view", CameraManager::GetInstance()->GetMatrix());
 
 	
 
@@ -164,22 +163,82 @@ void Stage1::Update()
 void Stage1::Render()
 {
 
-
-	light->UseLight(*shader);
-
-	shader->SetUniform1i("u_texture", 1);
-	shader->SetUniformMat4f("u_model", matrix::GetInstance()->GetSimple());
-	plane_model->RenderModel(*shader);
-
-	left->RenderModel(*shader);
-	right->RenderModel(*shader);
-	front->RenderModel(*shader);
-	back->RenderModel(*shader);
-	top->RenderModel(*shader);
-	for (auto& ele : v_wall)
 	{
-		shader->SetUniform1i("u_texture", 0);
-		ele->Render(*shader, *wall_model, matrix::GetInstance()->GetSimple());
+		glEnable(GL_DEPTH_TEST);
+		glViewport(0, 0, 1000, 800);
+		light->UseLight(*shader);
+		shader->SetUniformMat4f("u_view", CameraManager::GetInstance()->GetMatrix());
+		shader->SetUniformMat4f("u_proj", matrix::GetInstance()->GetProjection());
+		shader->SetUniform1i("u_texture", 1);
+		shader->SetUniformMat4f("u_model", matrix::GetInstance()->GetSimple());
+
+		if (turn_light)
+		{
+			light->SetLvector(glm::vec3(CameraManager::GetInstance()->m_cameraPos.x, CameraManager::GetInstance()->m_cameraPos.y, CameraManager::GetInstance()->m_cameraPos.z));
+			light->SetAmbientIntensity(0.5f);
+			light->SetDiffuseIntensity(5.0f);
+			light->SetSpecularIntensity(20.0f);
+			light->SetShinIness(30.0f);
+			shader->SetUniform3f("u_eyePosition", CameraManager::GetInstance()->m_cameraPos.x
+				, CameraManager::GetInstance()->m_cameraPos.y
+				, CameraManager::GetInstance()->m_cameraPos.z);
+		}
+
+		else
+		{
+			light->SetLvector(glm::vec3(CameraManager::GetInstance()->m_cameraPos.x, CameraManager::GetInstance()->m_cameraPos.y, CameraManager::GetInstance()->m_cameraPos.z));
+			light->SetAmbientIntensity(0.5f);
+			light->SetDiffuseIntensity(0);
+			light->SetSpecularIntensity(0);
+			light->SetShinIness(0);
+		
+		}
+
+
+		plane_model->RenderModel(*shader);
+		left->RenderModel(*shader);
+		right->RenderModel(*shader);
+		front->RenderModel(*shader);
+		back->RenderModel(*shader);
+		top->RenderModel(*shader);
+		for (auto& ele : v_wall)
+		{
+			shader->SetUniform1i("u_texture", 0);
+			ele->Render(*shader, *wall_model, matrix::GetInstance()->GetSimple());
+		}
+	}
+
+	{
+		glDisable(GL_DEPTH_TEST);
+
+		glViewport(800, 600, 200, 200);
+	
+		shader->SetUniformMat4f("u_view", CameraManager::GetInstance()->GetMatrix());
+		auto view = glm::lookAt(
+			glm::vec3(14.4149f, 78.1575f, 27.9546f),
+			glm::vec3(14.4149f-0.00128137f, 78.1575f+ -0.980925f, 27.9546f-0.194382f),
+			glm::vec3(0,1,0));
+		shader->SetUniformMat4f("u_view",view);
+		glm::mat4 projection = glm::ortho(-16.0f, 16.0f, -16.0f, 16.0f, 0.0f, 100.0f);
+		shader->SetUniformMat4f("u_proj", projection);
+
+
+
+		shader->SetUniform1i("u_texture", 1);
+		shader->SetUniformMat4f("u_model", matrix::GetInstance()->GetSimple());
+
+
+		plane_model->RenderModel(*shader);
+		left->RenderModel(*shader);
+		right->RenderModel(*shader);
+		front->RenderModel(*shader);
+		back->RenderModel(*shader);
+		top->RenderModel(*shader);
+		for (auto& ele : v_wall)
+		{
+			shader->SetUniform1i("u_texture", 0);
+			ele->Render(*shader, *wall_model, matrix::GetInstance()->GetSimple());
+		}
 	}
 
 }
@@ -236,13 +295,14 @@ void Stage1::KeyUpdate()
 	if (KeyManager::GetInstance()->GetbuttonDown(KeyType::THREE))
 	{
 	
+		
 
 		for (int i = 0; i < count_hang; ++i)
 		{
 			for (int j = 0; j < count_yal; ++j)
 			{
 				v_wall[count_hang * i + j]->dy = 2.0f;
-				v_wall[count_hang * i + j]->speed = 100.0f;
+				v_wall[count_hang * i + j]->speed = 10.0f;
 		
 
 			}
@@ -250,12 +310,12 @@ void Stage1::KeyUpdate()
 		
 		for (int i = 0; i < count_hang; ++i) {
 			if (i < count_yal) {
-				v_wall[i * count_hang + i]->dy = 70.0f;
-				v_wall[i * count_hang + i]->speed = 100.0f;
+				v_wall[i * count_hang + i]->dy = 30.0f;
+				v_wall[i * count_hang + i]->speed = 30.0f;
 			
 		
-				v_wall[i * count_hang + (count_hang - 1 - i)]->dy = 70.0f; 
-				v_wall[i * count_hang + (count_hang - 1 - i)]->speed = 100.0f;
+				v_wall[i * count_hang + (count_hang - 1 - i)]->dy = 30.0f;
+				v_wall[i * count_hang + (count_hang - 1 - i)]->speed = 30.0f;
 	
 			}
 		}
@@ -301,28 +361,73 @@ void Stage1::KeyUpdate()
 		}
 	
 	}
-}
-
-void Stage1::LightUpdate()
-{
-
-	if (turn_light)
+	if (KeyManager::GetInstance()->Getbutton(KeyType::R))
 	{
-		light->SetLvector(glm::vec3(CameraManager::GetInstance()->m_cameraPos.x, CameraManager::GetInstance()->m_cameraPos.y, CameraManager::GetInstance()->m_cameraPos.z));
-		//light->SetLvector(glm::vec3(0,1,0));
-		light->SetAmbientIntensity(0.3f);
-		light->SetDiffuseIntensity(5.0f);
-		light->SetSpecularIntensity(15.0f);
-		light->SetShinIness(10.0f);
-		shader->SetUniform3f("u_eyePosition", CameraManager::GetInstance()->m_cameraPos.x
-			, CameraManager::GetInstance()->m_cameraPos.y
-			, CameraManager::GetInstance()->m_cameraPos.z);
+
+
+	
+		pass = false;
+
+		while (!pass)
+		{
+			{
+				cout << "행을 입력해주세요. (5~50 사이의값)" << endl;
+				int num = 0;
+				cin >> num;
+				count_hang = num;
+			}
+
+			{
+				cout << "열을 입력해주세요. (5~50 사이의값)" << endl;
+				int num = 0;
+				cin >> num;
+				count_yal = num;
+			}
+
+			if (count_hang < 5 || count_hang >50 || count_yal < 5 || count_yal >50)
+			{
+				cout << "입력범위를 다시확인해주세요." << endl;
+			}
+			else
+			{
+				pass = true;
+			}
+		}
+
+		//메모리제거//
+
+		for (int i = 0; i < v_wall.size(); ++i)
+		{
+			delete v_wall[i];
+		}
+
+		v_wall.clear();
+
+
+		for (int i = 0; i < count_hang; ++i)
+		{
+			for (int j = 0; j < count_yal; ++j)
+			{
+				Wall* box = new Wall(*wall_model);
+				auto scale = matrix::GetInstance()->GetScale(1, box->dy, 1);
+				auto trans = matrix::GetInstance()->GetTranslation(i, 0, j);
+				box->i = i;
+				box->j = j;
+				box->matrix = trans * scale;
+				v_wall.push_back(box);
+			}
+		}
+
+
+	
+
+			CameraManager::GetInstance()->m_cameraPos = glm::vec3(0, 10.0f, 100.0f);
+			CameraManager::GetInstance()->m_cameraFront= glm::vec3(0.0f,0.0f,-1.0f);
+			CameraManager::GetInstance()->m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
 
 	}
-	else
-	{
-		light->SetAmbientIntensity(0.3f);
-		light->SetDiffuseIntensity(0);
-		light->SetSpecularIntensity(0);
-	}
+
+
 }
+

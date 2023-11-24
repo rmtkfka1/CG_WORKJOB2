@@ -10,6 +10,7 @@ class Shader;
 class Wall;
 class Light;
 
+
 class Stage1 : public Scene
 {
 public:
@@ -20,7 +21,7 @@ public:
 	virtual void Update() override;
 	virtual void Render() override;
 	void KeyUpdate();
-	void LightUpdate();
+
 public:
 
 
@@ -54,5 +55,8 @@ public:
 	int count = 0;
 
 	bool turn_light = true;
+
+	float testing = 0;
+
 };
 
