@@ -75,6 +75,10 @@
     <IncludePath>C:\Users\pakhe\Desktop\Git\CG_WORKJOB2\CG_WORK2\project\CG_SHADER-main\CG_SHADER\CG_SHADER\FMOD Studio API Windows\api\core\inc;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\pakhe\Desktop\Git\CG_WORKJOB2\CG_WORK2\project\CG_SHADER-main\CG_SHADER\CG_SHADER\FMOD Studio API Windows\api\core\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\pakhe\Desktop\Git\CG_WORKJOB2\CG_WORK2\project\CG_SHADER-main\CG_SHADER\CG_SHADER\FMOD Studio API Windows\api\core\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\pakhe\Desktop\Git\CG_WORKJOB2\CG_WORK2\project\CG_SHADER-main\CG_SHADER\CG_SHADER\FMOD Studio API Windows\api\core\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -139,6 +143,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>glew32.lib freeglut.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -176,9 +181,6 @@
     </ClCompile>
     <ClCompile Include="src\Wall.cpp" />
     <ClCompile Include="src\Stage1.cpp" />
-    <ClCompile Include="src\연습장.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Scene.h" />
@@ -225,11 +227,6 @@
     <Image Include="res\textures\1.jpg" />
     <Image Include="res\textures\zz.jpg" />
     <Image Include="res\textures\해리.jpeg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="res\models\teapot.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </Object>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

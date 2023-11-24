@@ -154,7 +154,6 @@
     <ClCompile Include="src\Stage1.cpp">
       <Filter>05.Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\연습장.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core.h">
@@ -277,10 +276,5 @@
     </Image>
     <Image Include="res\textures\cat_diffuse.png" />
     <Image Include="res\textures\brick.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="res\models\teapot.obj">
-      <Filter>00.res\models</Filter>
-    </Object>
   </ItemGroup>
 </Project>
