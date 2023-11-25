@@ -33,9 +33,7 @@ void main()
 	//앰비언트
 	vec3 lightAmbient = u_light.lightColor * u_light.ambientIntensity;
 
-
-
-	vec3 lightDir = normalize(u_light.direction);
+	vec3 lightDir = normalize(u_light.direction-v_worldPosition);
 	//디퓨즈
 
 	float diffuseFactor = max(dot(normalize(v_Normal), lightDir), 0.0);
