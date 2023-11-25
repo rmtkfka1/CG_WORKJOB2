@@ -2,22 +2,53 @@
 
 layout(location = 0) out vec4 color;
 
-in vec2 v_TexCoord; //버텍스 셰이더에서 넘겨받은 데이터
-in vec3 v_Normal;
+struct light
+{
 
-uniform sampler2D u_texture; //texture는 sampler2D 타입
+	vec3 lightColor; 
+	float ambientIntensity;
+
+	vec3 direction;
+	float diffuseIntensity;
+
+	float specularIntensity;
+	float shinIness; //sh
+};
+
+
+in vec2 v_TexCoord; 
+in vec3 v_Normal;
+in vec3 v_worldPosition;
+
+
+
+
+uniform sampler2D u_texture;
+uniform sampler2D u_texture2;
+uniform light;
 uniform vec3 control_color;
+uniform vec3 u_eyePosition; //specular 계산을 위한 카메라 위치
 
 void main()
 {
-	//--빨간색으로 표시해 보기
-	//color = vec4(1.0, 0.0, 0.0, 1.0);
-
-	//--normal을 색상으로 표시해 보기
+	//앰비언트
 
 
-	//--uvchecker 입혀 보기, 왜 어떤 부분은 검은색으로 보일까?
-	color = texture(u_texture, v_TexCoord) + vec4(control_color,0);
+	vec3 lightAmbient = u_light.lightColor * u_light.ambientIntensity;
 
-	//color = v_Color;
+	vec3 lightDir = normalize(u_light.direction-v_worldPosition);
+	//디퓨즈
+
+	float diffuseFactor = max(dot(normalize(v_Normal), lightDir), 0.0);
+	vec3 lightDiffuse = u_light.lightColor * u_light.diffuseIntensity * ;
+
+
+	//스펙큘러
+	vec3 fragToEye = normalize(u_eyePosition - v_worldPosition);
+	vec3 rVec = 2.0 * v_Normal * dot(v_Normal, lightDir) - lightDir; //r vector 계산
+	vec3 lightSpecular = pow(max(dot(rVec, fragToEye), 0.0), u_light.shinIness) * u_light.lightColor * u_light.specularIntensity;
+
+	color = (texture(u_texture2, v_TexCoord)+texture(u_texture, v_TexCoord))* vec4(lightAmbient+lightDiffuse +lightSpecular ,1.0) + vec4(control_color,1);
+	 
+
 };
